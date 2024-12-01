@@ -1,27 +1,38 @@
 const express = require('express');
-const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
 const {
-    createOrder,
+    getOrders,
     getOrder,
-    myOrders,
-    getRestaurantOrders,
-    updateOrder,
-    assignDeliveryPartner,
-    getDeliveryPartnerOrders
+    createOrder,
+    updateOrderStatus,
+    addOrderRating,
+    assignDeliveryPartner
 } = require('../controllers/orderController');
 
-router.route('/')
-    .post(protect, createOrder);
+const router = express.Router();
 
-router.get('/me', protect, myOrders);
-router.get('/restaurant', protect, getRestaurantOrders);
-router.get('/delivery', protect, getDeliveryPartnerOrders);
+const { protect, authorize } = require('../middleware/auth');
+
+// Protect all routes
+router.use(protect);
+
+// Public routes (for authenticated users)
+router.route('/')
+    .get(getOrders)
+    .post(authorize('user'), createOrder);
 
 router.route('/:id')
-    .get(protect, getOrder)
-    .put(protect, updateOrder);
+    .get(getOrder);
 
-router.put('/:id/assign-delivery', protect, assignDeliveryPartner);
+// Order status updates
+router.route('/:id/status')
+    .patch(authorize('admin', 'restaurant', 'delivery', 'user'), updateOrderStatus);
+
+// Order rating
+router.route('/:id/rating')
+    .post(authorize('user'), addOrderRating);
+
+// Admin only routes
+router.route('/:id/assign')
+    .patch(authorize('admin'), assignDeliveryPartner);
 
 module.exports = router;

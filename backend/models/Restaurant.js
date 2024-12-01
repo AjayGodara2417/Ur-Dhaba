@@ -3,199 +3,167 @@ const mongoose = require('mongoose');
 const restaurantSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        trim: true
+        required: [true, 'Please add a restaurant name'],
+        trim: true,
+        maxlength: [50, 'Name cannot be more than 50 characters']
     },
     description: {
         type: String,
-        required: true
+        required: [true, 'Please add a description'],
+        maxlength: [500, 'Description cannot be more than 500 characters']
     },
     cuisine: {
-        type: String,
-        required: true,
-        enum: ['Indian', 'Chinese', 'Italian', 'Mexican', 'Thai', 'Japanese', 'Continental', 'Fast Food']
+        type: [String],
+        required: [true, 'Please select at least one cuisine type'],
+        enum: ['Indian', 'Chinese', 'Italian', 'Mexican', 'Thai', 'Japanese', 'Continental', 'Fast Food', 'Street Food', 'Desserts', 'Beverages']
     },
     address: {
         street: {
             type: String,
-            required: true
+            required: [true, 'Please add a street address']
         },
         city: {
             type: String,
-            required: true
+            required: [true, 'Please add a city']
         },
         state: {
             type: String,
-            required: true
+            required: [true, 'Please add a state']
         },
         zipCode: {
             type: String,
-            required: true
+            required: [true, 'Please add a zip code']
         },
-        coordinates: {
-            lat: {
-                type: Number,
-                required: true
+        location: {
+            type: {
+                type: String,
+                enum: ['Point']
             },
-            lng: {
-                type: Number,
-                required: true
+            coordinates: {
+                type: [Number],
+                index: '2dsphere'
             }
         }
     },
     images: {
         cover: {
             type: String,
-            required: true
+            required: [true, 'Please add a cover image']
         },
         gallery: [String]
     },
-    rating: {
-        average: {
-            type: Number,
-            default: 0,
-            min: 0,
-            max: 5
-        },
-        total: {
-            type: Number,
-            default: 0
-        },
-        distribution: {
-            1: { type: Number, default: 0 },
-            2: { type: Number, default: 0 },
-            3: { type: Number, default: 0 },
-            4: { type: Number, default: 0 },
-            5: { type: Number, default: 0 }
-        }
+    menu: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Menu',
+        required: true
     },
-    priceRange: {
-        type: String,
-        required: true,
-        enum: ['₹', '₹₹', '₹₹₹', '₹₹₹₹']
-    },
-    deliveryInfo: {
-        estimatedTime: {
-            min: {
-                type: Number,
-                required: true
-            },
-            max: {
-                type: Number,
-                required: true
-            }
-        },
-        radius: {
-            type: Number,
-            required: true,
-            default: 5 // in kilometers
-        },
-        fee: {
-            type: Number,
-            required: true,
-            default: 0
-        },
-        minimumOrder: {
-            type: Number,
-            required: true,
-            default: 0
-        }
-    },
-    status: {
-        isOpen: {
-            type: Boolean,
-            default: true
-        },
-        isActive: {
-            type: Boolean,
-            default: true
-        },
-        acceptingOrders: {
-            type: Boolean,
-            default: true
-        },
-        temporarilyClosed: {
-            type: Boolean,
-            default: false
-        },
-        closedUntil: {
-            type: Date
-        }
-    },
-    operatingHours: {
-        monday: { 
-            isOpen: { type: Boolean, default: true },
-            shifts: [{
-                open: String,
-                close: String
-            }]
-        },
-        tuesday: { 
-            isOpen: { type: Boolean, default: true },
-            shifts: [{
-                open: String,
-                close: String
-            }]
-        },
-        wednesday: { 
-            isOpen: { type: Boolean, default: true },
-            shifts: [{
-                open: String,
-                close: String
-            }]
-        },
-        thursday: { 
-            isOpen: { type: Boolean, default: true },
-            shifts: [{
-                open: String,
-                close: String
-            }]
-        },
-        friday: { 
-            isOpen: { type: Boolean, default: true },
-            shifts: [{
-                open: String,
-                close: String
-            }]
-        },
-        saturday: { 
-            isOpen: { type: Boolean, default: true },
-            shifts: [{
-                open: String,
-                close: String
-            }]
-        },
-        sunday: { 
-            isOpen: { type: Boolean, default: true },
-            shifts: [{
-                open: String,
-                close: String
-            }]
-        }
-    },
-    features: {
-        hasParking: { type: Boolean, default: false },
-        hasAC: { type: Boolean, default: false },
-        hasOutdoorSeating: { type: Boolean, default: false },
-        servesAlcohol: { type: Boolean, default: false },
-        hasWifi: { type: Boolean, default: false },
-        acceptsReservations: { type: Boolean, default: false },
-        acceptsCard: { type: Boolean, default: true },
-        acceptsUPI: { type: Boolean, default: true },
-        hasVegOptions: { type: Boolean, default: true }
-    },
-    tags: [{
-        type: String
-    }],
     owner: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: true
     },
-    menu: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Menu',
-        required: true
+    rating: {
+        type: Number,
+        min: [1, 'Rating must be at least 1'],
+        max: [5, 'Rating cannot be more than 5']
+    },
+    reviews: [{
+        user: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 5
+        },
+        comment: {
+            type: String,
+            required: true,
+            maxlength: 500
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    averageRating: {
+        type: Number,
+        default: 0
+    },
+    totalReviews: {
+        type: Number,
+        default: 0
+    },
+    priceRange: {
+        type: String,
+        required: [true, 'Please specify a price range'],
+        enum: ['$', '$$', '$$$', '$$$$']
+    },
+    isOpen: {
+        type: Boolean,
+        default: false
+    },
+    features: {
+        delivery: {
+            type: Boolean,
+            default: true
+        },
+        takeout: {
+            type: Boolean,
+            default: true
+        },
+        dineIn: {
+            type: Boolean,
+            default: true
+        },
+        parking: {
+            type: Boolean,
+            default: false
+        },
+        outdoorSeating: {
+            type: Boolean,
+            default: false
+        }
+    },
+    businessHours: {
+        monday: {
+            open: String,
+            close: String,
+            isOpen: { type: Boolean, default: true }
+        },
+        tuesday: {
+            open: String,
+            close: String,
+            isOpen: { type: Boolean, default: true }
+        },
+        wednesday: {
+            open: String,
+            close: String,
+            isOpen: { type: Boolean, default: true }
+        },
+        thursday: {
+            open: String,
+            close: String,
+            isOpen: { type: Boolean, default: true }
+        },
+        friday: {
+            open: String,
+            close: String,
+            isOpen: { type: Boolean, default: true }
+        },
+        saturday: {
+            open: String,
+            close: String,
+            isOpen: { type: Boolean, default: true }
+        },
+        sunday: {
+            open: String,
+            close: String,
+            isOpen: { type: Boolean, default: true }
+        }
     },
     bankDetails: {
         accountHolder: String,
@@ -206,28 +174,43 @@ const restaurantSchema = new mongoose.Schema({
     },
     documents: {
         fssaiLicense: {
-            number: String,
-            expiryDate: Date,
-            image: String
+            number: {
+                type: String,
+                required: [true, 'FSSAI license number is required']
+            },
+            expiryDate: {
+                type: Date,
+                required: [true, 'FSSAI license expiry date is required']
+            },
+            image: {
+                type: String,
+                required: [true, 'FSSAI license image is required']
+            }
         },
         gstNumber: String,
-        panNumber: String
-    },
-    contactInfo: {
-        phone: {
+        panNumber: {
             type: String,
-            required: true
-        },
-        email: {
-            type: String,
-            required: true
-        },
-        website: String,
-        socialMedia: {
-            facebook: String,
-            instagram: String,
-            twitter: String
+            required: [true, 'PAN number is required']
         }
+    },
+    stats: {
+        totalOrders: {
+            type: Number,
+            default: 0
+        },
+        totalRevenue: {
+            type: Number,
+            default: 0
+        },
+        avgOrderValue: {
+            type: Number,
+            default: 0
+        },
+        monthlyStats: [{
+            month: Date,
+            orders: Number,
+            revenue: Number
+        }]
     }
 }, {
     timestamps: true,
@@ -235,61 +218,69 @@ const restaurantSchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
-// Virtual for calculating if restaurant is currently open
-restaurantSchema.virtual('isCurrentlyOpen').get(function() {
-    if (!this.status.isActive || this.status.temporarilyClosed) return false;
-    if (this.status.closedUntil && this.status.closedUntil > new Date()) return false;
+// Index for location-based queries
+restaurantSchema.index({ 'address.location': '2dsphere' });
 
-    const now = new Date();
-    const day = now.toLocaleLowerCase();
-    const time = now.toLocaleTimeString('en-US', { hour12: false });
-
-    const todaySchedule = this.operatingHours[day];
-    if (!todaySchedule.isOpen) return false;
-
-    return todaySchedule.shifts.some(shift => {
-        return time >= shift.open && time <= shift.close;
-    });
-});
-
-// Index for search functionality
+// Index for text search
 restaurantSchema.index({
     name: 'text',
-    'description': 'text',
-    cuisine: 'text',
-    'tags': 'text',
-    'address.city': 'text'
+    description: 'text',
+    'cuisine': 'text'
 });
 
-// Index for geospatial queries
-restaurantSchema.index({
-    'address.coordinates': '2dsphere'
+// Virtual populate reviews
+restaurantSchema.virtual('reviewsCount').get(function() {
+    return this.reviews.length;
 });
 
-// Index for filtering
-restaurantSchema.index({ cuisine: 1 });
-restaurantSchema.index({ 'status.isActive': 1 });
-restaurantSchema.index({ 'status.acceptingOrders': 1 });
-restaurantSchema.index({ 'rating.average': -1 });
-restaurantSchema.index({ owner: 1 });
-
-// Methods
-restaurantSchema.methods.updateRating = function(newRating) {
-    const oldTotal = this.rating.total;
-    const oldAverage = this.rating.average;
-    
-    // Update distribution
-    this.rating.distribution[newRating]++;
-    
-    // Update total and average
-    this.rating.total++;
-    this.rating.average = (oldTotal * oldAverage + newRating) / this.rating.total;
+// Update average rating
+restaurantSchema.methods.updateAverageRating = function() {
+    if (this.reviews.length === 0) {
+        this.averageRating = 0;
+        this.totalReviews = 0;
+    } else {
+        const totalRating = this.reviews.reduce((acc, review) => acc + review.rating, 0);
+        this.averageRating = Math.round((totalRating / this.reviews.length) * 10) / 10;
+        this.totalReviews = this.reviews.length;
+    }
+    return this.save();
 };
 
+// Toggle restaurant status
 restaurantSchema.methods.toggleStatus = function(statusType) {
-    if (this.status.hasOwnProperty(statusType)) {
-        this.status[statusType] = !this.status[statusType];
+    if (statusType === 'isOpen') {
+        this.isOpen = !this.isOpen;
+    } else if (this.features.hasOwnProperty(statusType)) {
+        this.features[statusType] = !this.features[statusType];
     }
+    return this.save();
+};
+
+// Update restaurant stats
+restaurantSchema.methods.updateStats = async function(order) {
+    this.stats.totalOrders += 1;
+    this.stats.totalRevenue += order.totalAmount;
+    this.stats.avgOrderValue = this.stats.totalRevenue / this.stats.totalOrders;
+
+    const orderMonth = new Date(order.createdAt);
+    orderMonth.setDate(1); // Set to first day of month
+
+    const monthStats = this.stats.monthlyStats.find(
+        stat => stat.month.getTime() === orderMonth.getTime()
+    );
+
+    if (monthStats) {
+        monthStats.orders += 1;
+        monthStats.revenue += order.totalAmount;
+    } else {
+        this.stats.monthlyStats.push({
+            month: orderMonth,
+            orders: 1,
+            revenue: order.totalAmount
+        });
+    }
+
+    return this.save();
 };
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);

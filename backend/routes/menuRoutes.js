@@ -1,25 +1,53 @@
 const express = require('express');
-const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
 const {
+    getMenus,
+    getMenu,
+    createMenu,
+    updateMenu,
+    deleteMenu,
     addMenuItem,
     updateMenuItem,
     deleteMenuItem,
-    getRestaurantMenu,
-    toggleItemAvailability
+    toggleItemAvailability,
+    addSpecialOffer
 } = require('../controllers/menuController');
 
-// Get restaurant menu
-router.get('/:restaurantId', getRestaurantMenu);
+const router = express.Router({ mergeParams: true });
 
-// Menu item operations
-router.post('/:restaurantId', protect, addMenuItem);
+const { protect, authorize } = require('../middleware/auth');
 
-router.route('/:restaurantId/item/:itemId')
-    .put(protect, updateMenuItem)
-    .delete(protect, deleteMenuItem);
+// Public routes
+router.get('/', getMenus);
+router.get('/:id', getMenu);
 
-// Toggle item availability
-router.patch('/:restaurantId/item/:itemId/toggle-availability', protect, toggleItemAvailability);
+// Protected routes
+router.use(protect);
+router.use(authorize('admin', 'restaurant'));
+
+router
+    .route('/')
+    .post(createMenu);
+
+router
+    .route('/:id')
+    .put(updateMenu)
+    .delete(deleteMenu);
+
+router
+    .route('/:id/items')
+    .post(addMenuItem);
+
+router
+    .route('/:id/items/:itemId')
+    .put(updateMenuItem)
+    .delete(deleteMenuItem);
+
+router
+    .route('/:id/items/:itemId/toggle')
+    .patch(toggleItemAvailability);
+
+router
+    .route('/:id/offers')
+    .post(addSpecialOffer);
 
 module.exports = router;

@@ -1,63 +1,129 @@
 const mongoose = require('mongoose');
 
+const orderItemSchema = new mongoose.Schema({
+    menuItem: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'MenuItem',
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true,
+        min: [1, 'Quantity must be at least 1']
+    },
+    customization: [{
+        name: String,
+        option: String,
+        price: Number
+    }]
+});
+
 const orderSchema = new mongoose.Schema({
-    customer: {
-        type: mongoose.Schema.Types.ObjectId,
+    user: {
+        type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: true
     },
     restaurant: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.ObjectId,
         ref: 'Restaurant',
         required: true
     },
-    items: [{
-        menuItem: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Menu',
-            required: true
-        },
-        name: String,
-        price: Number,
-        quantity: Number,
-        customization: [{
-            name: String,
-            option: {
-                name: String,
-                price: Number
-            }
-        }]
-    }],
-    deliveryPartner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    status: {
-        type: String,
-        enum: ['pending', 'confirmed', 'preparing', 'ready', 'picked', 'delivered', 'cancelled'],
-        default: 'pending'
-    },
+    items: [orderItemSchema],
     deliveryAddress: {
-        street: String,
-        city: String,
-        state: String,
-        zipCode: String,
+        street: {
+            type: String,
+            required: [true, 'Please add a street address']
+        },
+        city: {
+            type: String,
+            required: [true, 'Please add a city']
+        },
+        state: {
+            type: String,
+            required: [true, 'Please add a state']
+        },
+        zipCode: {
+            type: String,
+            required: [true, 'Please add a zip code']
+        },
         coordinates: {
-            lat: Number,
-            lng: Number
+            type: {
+                type: String,
+                enum: ['Point']
+            },
+            coordinates: [Number]
         }
     },
-    paymentMethod: {
+    contact: {
+        name: {
+            type: String,
+            required: [true, 'Please add a contact name']
+        },
+        phone: {
+            type: String,
+            required: [true, 'Please add a contact phone']
+        }
+    },
+    paymentDetails: {
+        method: {
+            type: String,
+            required: true,
+            enum: ['CASH', 'CARD', 'UPI', 'WALLET']
+        },
+        status: {
+            type: String,
+            enum: ['PENDING', 'COMPLETED', 'FAILED', 'REFUNDED'],
+            default: 'PENDING'
+        },
+        transactionId: String,
+        paidAt: Date
+    },
+    orderStatus: {
         type: String,
-        enum: ['cod', 'online'],
+        enum: [
+            'PLACED',
+            'CONFIRMED',
+            'PREPARING',
+            'READY_FOR_PICKUP',
+            'OUT_FOR_DELIVERY',
+            'DELIVERED',
+            'CANCELLED'
+        ],
+        default: 'PLACED'
+    },
+    statusHistory: [{
+        status: {
+            type: String,
+            enum: [
+                'PLACED',
+                'CONFIRMED',
+                'PREPARING',
+                'READY_FOR_PICKUP',
+                'OUT_FOR_DELIVERY',
+                'DELIVERED',
+                'CANCELLED'
+            ]
+        },
+        timestamp: {
+            type: Date,
+            default: Date.now
+        },
+        note: String
+    }],
+    subtotal: {
+        type: Number,
         required: true
     },
-    paymentStatus: {
-        type: String,
-        enum: ['pending', 'completed', 'failed'],
-        default: 'pending'
-    },
-    subtotal: {
+    taxAmount: {
         type: Number,
         required: true
     },
@@ -65,26 +131,114 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    tax: {
+    discount: {
         type: Number,
-        required: true
+        default: 0
     },
     total: {
         type: Number,
         required: true
     },
-    orderNotes: String,
-    deliveryInstructions: String,
-    estimatedDeliveryTime: Date,
+    specialInstructions: String,
+    estimatedDeliveryTime: {
+        type: Date,
+        required: true
+    },
     actualDeliveryTime: Date,
-    trackingDetails: [{
-        status: String,
-        timestamp: Date,
-        description: String
-    }]
+    rating: {
+        food: {
+            type: Number,
+            min: 1,
+            max: 5
+        },
+        delivery: {
+            type: Number,
+            min: 1,
+            max: 5
+        },
+        review: String,
+        createdAt: Date
+    },
+    deliveryPartner: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'DeliveryPartner'
+    }
 }, {
     timestamps: true
 });
 
+// Add index for location-based queries
+orderSchema.index({ 'deliveryAddress.coordinates': '2dsphere' });
+
+// Add index for status-based queries
+orderSchema.index({ orderStatus: 1, createdAt: -1 });
+
+// Add index for user queries
+orderSchema.index({ user: 1, createdAt: -1 });
+
+// Add index for restaurant queries
+orderSchema.index({ restaurant: 1, createdAt: -1 });
+
+// Calculate totals before saving
+orderSchema.pre('save', function(next) {
+    // Calculate subtotal
+    this.subtotal = this.items.reduce((total, item) => {
+        const itemTotal = item.price * item.quantity;
+        const customizationTotal = item.customization.reduce((sum, custom) => sum + custom.price, 0);
+        return total + itemTotal + (customizationTotal * item.quantity);
+    }, 0);
+
+    // Calculate tax (assuming 5% tax rate)
+    this.taxAmount = this.subtotal * 0.05;
+
+    // Calculate total
+    this.total = this.subtotal + this.taxAmount + this.deliveryFee - this.discount;
+
+    next();
+});
+
+// Update status history
+orderSchema.methods.updateStatus = async function(status, note) {
+    this.orderStatus = status;
+    this.statusHistory.push({
+        status,
+        note,
+        timestamp: Date.now()
+    });
+
+    if (status === 'DELIVERED') {
+        this.actualDeliveryTime = Date.now();
+    }
+
+    return this.save();
+};
+
+// Add rating and review
+orderSchema.methods.addRating = async function(rating) {
+    if (this.orderStatus !== 'DELIVERED') {
+        throw new Error('Cannot rate an undelivered order');
+    }
+
+    this.rating = {
+        ...rating,
+        createdAt: Date.now()
+    };
+
+    return this.save();
+};
+
+// Virtual for order duration
+orderSchema.virtual('orderDuration').get(function() {
+    if (!this.actualDeliveryTime) return null;
+    return this.actualDeliveryTime - this.createdAt;
+});
+
+// Virtual for delivery status
+orderSchema.virtual('isDelayed').get(function() {
+    if (!this.estimatedDeliveryTime || this.orderStatus === 'DELIVERED') return false;
+    return Date.now() > this.estimatedDeliveryTime;
+});
+
 const Order = mongoose.model('Order', orderSchema);
+
 module.exports = Order;
