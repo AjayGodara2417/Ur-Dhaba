@@ -1,5 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar/Navbar';
+import Hero from './components/Hero/Hero';
+import Footer from './components/Footer/Footer';
 import { ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import { CssBaseline } from '@mui/material';
@@ -26,55 +29,64 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Router>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/restaurants" element={<RestaurantList />} />
-              <Route path="/restaurant/:id" element={<RestaurantDetail />} />
-              <Route 
-                path="/cart" 
-                element={
-                  <ProtectedRoute>
-                    <Cart />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/checkout" 
-                element={
-                  <ProtectedRoute>
-                    <Checkout />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/profile" 
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/orders" 
-                element={
-                  <ProtectedRoute>
-                    <Orders />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/restaurant-dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <RestaurantDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-            </Routes>
-          </Layout>
+          <div className="app">
+            <Navbar />
+            <Layout>
+              <Routes>
+                <Route path="/" element={
+                  <>
+                    <Hero />
+                    <Home />
+                  </>
+                } />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/restaurants" element={<RestaurantList />} />
+                <Route path="/restaurant/:id" element={<RestaurantDetail />} />
+                <Route 
+                  path="/cart" 
+                  element={
+                    <ProtectedRoute>
+                      <Cart />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/checkout" 
+                  element={
+                    <ProtectedRoute>
+                      <Checkout />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/profile" 
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/orders" 
+                  element={
+                    <ProtectedRoute>
+                      <Orders />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/restaurant-dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <RestaurantDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+              </Routes>
+            </Layout>
+            <Footer />
+          </div>
         </Router>
       </ThemeProvider>
     </Provider>
