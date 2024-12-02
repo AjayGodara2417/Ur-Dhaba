@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { CssBaseline } from '@mui/material';
 import theme from './theme';
 import { store } from './redux/store';
-import Layout from './components/layout/Layout';
+// import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Import pages (to be created)
@@ -31,7 +31,7 @@ function App() {
         <Router>
           <div className="app">
             <Navbar />
-            <Layout>
+            {/* <Layout> */}
               <Routes>
                 <Route path="/" element={
                   <>
@@ -84,7 +84,7 @@ function App() {
                   } 
                 />
               </Routes>
-            </Layout>
+            {/* </Layout> */}
             <Footer />
           </div>
         </Router>

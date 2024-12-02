@@ -8,6 +8,7 @@ import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { CircularProgress, Autocomplete, TextField } from '@mui/material';
+import FoodCategories from '../FoodCategories/FoodCategories';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -137,7 +138,7 @@ const Hero = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  placeholder="Search for restaurant, item or more"
+                  placeholder="Search for restaurant"
                   variant="standard"
                   fullWidth
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -152,33 +153,36 @@ const Hero = () => {
             />
           </div>
         </div>
-      </div>
 
-      <div className="service-cards">
-        <div className="service-card">
-          <div>
-            <h2>FOOD DELIVERY</h2>
-            <p>FROM RESTAURANTS</p>
-            <span className="offer">UPTO 60% OFF</span>
-          </div>
-          <DeliveryDiningIcon sx={{ fontSize: 80, color: '#fc8019', marginLeft: 'auto' }} />
-        </div>
+        {/* Food Categories Section */}
+        <FoodCategories />
 
-        <div className="service-card">
-          <div>
-            <h2>DINEOUT</h2>
-            <p>EAT OUT & SAVE MORE</p>
-            <span className="offer">UPTO 50% OFF</span>
+        <div className="service-cards">
+          <div className="service-card">
+            <div>
+              <h2>FOOD DELIVERY</h2>
+              <p>FROM RESTAURANTS</p>
+              <span className="offer">UPTO 60% OFF</span>
+            </div>
+            <DeliveryDiningIcon sx={{ fontSize: 80, color: '#fc8019', marginLeft: 'auto' }} />
           </div>
-          <RestaurantIcon sx={{ fontSize: 80, color: '#fc8019', marginLeft: 'auto' }} />
-        </div>
 
-        <div className="service-card">
-          <div>
-            <h2>GENIE</h2>
-            <p>PICK-UP & DROP</p>
+          <div className="service-card">
+            <div>
+              <h2>DINEOUT</h2>
+              <p>EAT OUT & SAVE MORE</p>
+              <span className="offer">UPTO 50% OFF</span>
+            </div>
+            <RestaurantIcon sx={{ fontSize: 80, color: '#fc8019', marginLeft: 'auto' }} />
           </div>
-          <LocalShippingIcon sx={{ fontSize: 80, color: '#fc8019', marginLeft: 'auto' }} />
+
+          <div className="service-card">
+            <div>
+              <h2>GENIE</h2>
+              <p>PICK-UP & DROP</p>
+            </div>
+            <LocalShippingIcon sx={{ fontSize: 80, color: '#fc8019', marginLeft: 'auto' }} />
+          </div>
         </div>
       </div>
     </div>

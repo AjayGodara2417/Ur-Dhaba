@@ -59,7 +59,7 @@ const Home = () => {
     return (
         <Box>
             {/* Hero Section */}
-            <Box
+            {/* <Box
                 sx={{
                     background: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://wallpapercave.com/wp/wp1874166.jpg)',
                     backgroundSize: 'cover',
@@ -130,7 +130,7 @@ const Home = () => {
                         </Button>
                     </Box>
                 </Container>
-            </Box>
+            </Box> */}
 
             {/* Featured Restaurants Section */}
             <Container maxWidth="lg">
