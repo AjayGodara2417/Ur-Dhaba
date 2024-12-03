@@ -15,13 +15,15 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
-import RestaurantList from './pages/restaurant/RestaurantList';
+import RestaurantList from './components/RestaurantList/RestaurantList';
 import RestaurantDetail from './pages/restaurant/RestaurantDetail';
 import RestaurantDashboard from './pages/restaurant/RestaurantDashboard';
 import Cart from './pages/cart/Cart';
 import Checkout from './pages/checkout/Checkout';
 import Profile from './pages/user/Profile';
 import Orders from './pages/user/Orders';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
                 } />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route path="/restaurants" element={<RestaurantList />} />
                 <Route path="/restaurant/:id" element={<RestaurantDetail />} />
                 <Route 

@@ -1,0 +1,278 @@
+.restaurant-list-container {
+  margin-top: 100px;
+  padding: 40px 0;
+  background-color: #f8f8f8;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 32px;
+}
+
+.categories-sidebar {
+  width: 280px;
+  height: fit-content;
+  position: sticky;
+  top: 120px;
+  padding: 16px 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-title {
+  padding: 0 16px 8px;
+  border-bottom: 1px solid #e0e0e0;
+  color: #282c3f;
+  font-weight: 600 !important;
+}
+
+.category-item {
+  padding: 8px 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+.category-item:hover {
+  background-color: #f5f5f5 !important;
+  color: #fc8019;
+}
+
+.category-item.selected {
+  background-color: #fff3e5 !important;
+  color: #fc8019;
+}
+
+.category-item .MuiListItemText-primary {
+  font-size: 14px;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.page-title {
+  margin-bottom: 24px !important;
+  font-weight: 600 !important;
+  color: #282c3f;
+}
+
+.filters-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  background-color: white !important;
+}
+
+.filter-chip:hover {
+  border-color: #fc8019 !important;
+  color: #fc8019 !important;
+}
+
+.filter-chip.selected {
+  background-color: #fc8019 !important;
+  color: white !important;
+  border-color: #fc8019 !important;
+}
+
+.sort-button {
+  color: #282c3f !important;
+  border: 1px solid #e0e0e0 !important;
+  padding: 6px 16px !important;
+  text-transform: none !important;
+  font-weight: normal !important;
+}
+
+.sort-button:hover {
+  border-color: #fc8019 !important;
+  color: #fc8019 !important;
+}
+
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+  padding: 16px 0;
+}
+
+.restaurant-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.restaurant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.restaurant-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.restaurant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.restaurant-card:hover .restaurant-image img {
+  transform: scale(1.05);
+}
+
+.offer-tag {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(37, 111, 239, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.offer-tag svg {
+  font-size: 16px;
+}
+
+.restaurant-info {
+  padding: 16px;
+}
+
+.rating-time {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.delivery-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #686b78;
+  font-size: 14px;
+}
+
+.delivery-time svg {
+  font-size: 16px;
+}
+
+/* Loading Skeleton Styles */
+.skeleton {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 8px;
+  color: #686b78;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .content-wrapper {
+    gap: 24px;
+  }
+
+  .categories-sidebar {
+    width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .categories-sidebar {
+    width: 100%;
+    position: static;
+    margin-bottom: 24px;
+  }
+
+  .category-item {
+    padding: 12px 16px !important;
+  }
+
+  .restaurant-list-container {
+    padding: 24px 0;
+  }
+
+  .page-title {
+    font-size: 24px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .filters-section {
+    margin-bottom: 16px;
+  }
+
+  .restaurant-grid {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .restaurant-list-container {
+    padding: 16px 0;
+  }
+
+  .page-title {
+    font-size: 20px !important;
+  }
+
+  .filter-chips {
+    gap: 8px;
+  }
+
+  .filter-chip {
+    font-size: 12px !important;
+  }
+
+  .restaurant-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

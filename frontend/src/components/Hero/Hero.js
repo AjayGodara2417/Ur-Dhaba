@@ -82,6 +82,10 @@ const Hero = () => {
     }
   };
 
+  const handleFoodDeliveryClick = () => {
+    navigate('/restaurants');
+  };
+
   return (
     <div className="hero">
       <div className="hero-content">
@@ -158,7 +162,7 @@ const Hero = () => {
         <FoodCategories />
 
         <div className="service-cards">
-          <div className="service-card">
+          <div className="service-card" onClick={handleFoodDeliveryClick}>
             <div>
               <h2>FOOD DELIVERY</h2>
               <p>FROM RESTAURANTS</p>
