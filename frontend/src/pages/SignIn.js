@@ -1,13 +1,37 @@
-import React, { useState } from 'react';
-import { Box, Container, TextField, Button, Typography, Paper } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Container, TextField, Button, Typography, Paper, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { login, reset } from '../features/auth/authSlice';
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      setTimeout(() => {
+        dispatch(reset());
+      }, 3000);
+    }
+
+    if (isSuccess || user) {
+      navigate('/');
+    }
+
+    return () => {
+      dispatch(reset());
+    };
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const handleChange = (e) => {
     setFormData({
@@ -18,8 +42,7 @@ const SignIn = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle sign in logic here
-    console.log('Sign in data:', formData);
+    dispatch(login(formData));
   };
 
   return (
@@ -36,6 +59,11 @@ const SignIn = () => {
           <Typography component="h1" variant="h5" sx={{ mb: 3, color: '#282c3f', textAlign: 'center' }}>
             Sign In
           </Typography>
+          {isError && (
+            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+              {message}
+            </Alert>
+          )}
           <form onSubmit={handleSubmit}>
             <TextField
               margin="normal"
@@ -67,32 +95,30 @@ const SignIn = () => {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={isLoading}
               sx={{
-                mt: 2,
+                mt: 1,
                 mb: 2,
-                backgroundColor: '#fc8019',
-                '&:hover': {
-                  backgroundColor: '#e06c0f',
-                },
-                textTransform: 'none',
                 py: 1.5,
-              }}
-            >
-              Sign In
-            </Button>
-            <Button
-              fullWidth
-              onClick={() => navigate('/signup')}
-              sx={{
-                color: '#fc8019',
-                textTransform: 'none',
+                bgcolor: '#fc8019',
                 '&:hover': {
-                  backgroundColor: 'rgba(252, 128, 25, 0.1)',
-                },
+                  bgcolor: '#e27312'
+                }
               }}
             >
-              Don't have an account? Sign Up
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                New to Ur Dhaba?{' '}
+                <Button
+                  onClick={() => navigate('/signup')}
+                  sx={{ textTransform: 'none', color: '#fc8019' }}
+                >
+                  Create Account
+                </Button>
+              </Typography>
+            </Box>
           </form>
         </Paper>
       </Box>

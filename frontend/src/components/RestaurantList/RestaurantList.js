@@ -95,8 +95,43 @@ const RestaurantList = () => {
     const fetchRestaurants = async () => {
       try {
         setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setRestaurants([]);
+        // Replace this with actual API call once backend is ready
+        const dummyRestaurants = [
+          {
+            id: 1,
+            name: "PizzaExpress",
+            image: "/images/restaurants/pizzaexpress-cover.jpg",
+            rating: 4.0,
+            deliveryTime: { min: 50, max: 55 },
+            cuisine: ["Pizzas", "Fast Food"],
+            location: "Guru Arjan Dev Nagar",
+            offer: null
+          },
+          {
+            id: 2,
+            name: "Ghee Indian Kitchen",
+            image: "/images/restaurants/ghee-indian-cover.jpg",
+            rating: 3.5,
+            deliveryTime: { min: 60, max: 65 },
+            cuisine: ["Indian", "Home Food"],
+            location: "Chaura Bazar",
+            offer: "₹150 OFF ABOVE ₹999"
+          },
+          {
+            id: 3,
+            name: "Honey's Hygienic Food",
+            image: "/images/restaurants/honeys-cover.jpg",
+            rating: 4.3,
+            deliveryTime: { min: 60, max: 65 },
+            cuisine: ["Indian", "Snacks"],
+            location: "Chaura Bazar",
+            offer: "10% OFF ABOVE ₹350"
+          }
+        ];
+
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setRestaurants(dummyRestaurants);
       } catch (error) {
         console.error('Error fetching restaurants:', error);
       } finally {
@@ -206,14 +241,19 @@ const RestaurantList = () => {
                     <Box className="restaurant-info">
                       <Typography variant="h6">{restaurant.name}</Typography>
                       <Box className="rating-time">
-                        <Rating value={restaurant.rating} readOnly precision={0.1} />
+                        <Box className="rating">
+                          <Rating value={restaurant.rating} readOnly precision={0.1} size="small" />
+                          <Typography variant="body2">
+                            {restaurant.rating}
+                          </Typography>
+                        </Box>
                         <Box className="delivery-time">
                           <TimerIcon />
-                          {restaurant.deliveryTime} mins
+                          {restaurant.deliveryTime.min}-{restaurant.deliveryTime.max} mins
                         </Box>
                       </Box>
                       <Typography variant="body2" color="text.secondary">
-                        {restaurant.cuisine}
+                        {restaurant.cuisine.join(", ")}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {restaurant.location}

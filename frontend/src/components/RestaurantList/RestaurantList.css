@@ -172,6 +172,25 @@
   margin: 8px 0;
 }
 
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #48c479;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.rating .MuiRating-root {
+  color: white;
+  font-size: 14px;
+}
+
+.rating .MuiTypography-body2 {
+  font-weight: 500;
+}
+
 .delivery-time {
   display: flex;
   align-items: center;

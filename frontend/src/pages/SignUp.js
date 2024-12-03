@@ -1,18 +1,42 @@
-import React, { useState } from 'react';
-import { Box, Container, TextField, Button, Typography, Paper, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Container, TextField, Button, Typography, Paper, FormControl, InputLabel, Select, MenuItem, Alert } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { register, reset } from '../features/auth/authSlice';
 
 const SignUp = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const defaultUserType = location.state?.userType || 'customer';
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    userType: defaultUserType
+    phone: '',
+    role: defaultUserType
   });
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      setTimeout(() => {
+        dispatch(reset());
+      }, 3000);
+    }
+
+    if (isSuccess || user) {
+      navigate('/');
+    }
+
+    return () => {
+      dispatch(reset());
+    };
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,8 +47,7 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle sign up logic here
-    console.log('Sign up data:', formData);
+    dispatch(register(formData));
   };
 
   return (
@@ -41,6 +64,11 @@ const SignUp = () => {
           <Typography component="h1" variant="h5" sx={{ mb: 3, color: '#282c3f', textAlign: 'center' }}>
             Create Account
           </Typography>
+          {isError && (
+            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+              {message}
+            </Alert>
+          )}
           <form onSubmit={handleSubmit}>
             <TextField
               margin="normal"
@@ -80,51 +108,62 @@ const SignUp = () => {
               onChange={handleChange}
               sx={{ mb: 2 }}
             />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="phone"
+              label="Phone Number"
+              type="tel"
+              id="phone"
+              autoComplete="tel"
+              value={formData.phone}
+              onChange={handleChange}
+              sx={{ mb: 2 }}
+            />
             <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel id="user-type-label">I want to</InputLabel>
+              <InputLabel id="role-label">I'm a</InputLabel>
               <Select
-                labelId="user-type-label"
-                id="userType"
-                name="userType"
-                value={formData.userType}
-                label="I want to"
+                labelId="role-label"
+                id="role"
+                name="role"
+                value={formData.role}
+                label="I'm a"
                 onChange={handleChange}
               >
-                <MenuItem value="customer">Order Food</MenuItem>
-                <MenuItem value="restaurant">List My Restaurant</MenuItem>
-                <MenuItem value="delivery">Become a Delivery Partner</MenuItem>
+                <MenuItem value="customer">Customer</MenuItem>
+                <MenuItem value="restaurant">Restaurant Owner</MenuItem>
+                <MenuItem value="delivery">Delivery Partner</MenuItem>
               </Select>
             </FormControl>
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              disabled={isLoading}
               sx={{
-                mt: 2,
+                mt: 1,
                 mb: 2,
-                backgroundColor: '#fc8019',
-                '&:hover': {
-                  backgroundColor: '#e06c0f',
-                },
-                textTransform: 'none',
                 py: 1.5,
-              }}
-            >
-              Sign Up
-            </Button>
-            <Button
-              fullWidth
-              onClick={() => navigate('/signin')}
-              sx={{
-                color: '#fc8019',
-                textTransform: 'none',
+                bgcolor: '#fc8019',
                 '&:hover': {
-                  backgroundColor: 'rgba(252, 128, 25, 0.1)',
-                },
+                  bgcolor: '#e27312'
+                }
               }}
             >
-              Already have an account? Sign In
+              {isLoading ? 'Creating Account...' : 'Sign Up'}
             </Button>
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                Already have an account?{' '}
+                <Button
+                  onClick={() => navigate('/signin')}
+                  sx={{ textTransform: 'none', color: '#fc8019' }}
+                >
+                  Sign In
+                </Button>
+              </Typography>
+            </Box>
           </form>
         </Paper>
       </Box>
